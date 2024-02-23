@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <!-- Create Coordinates Table -->
+  <changeSet id="0" author="d.baltabaev">
+    <createTable tableName="coordinates">
+
+      <column name="id" type="SERIAL">
+        <constraints primaryKey="true"/>
+      </column>
+
+      <column name="x" type="REAL">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="y" type="INT">
+        <constraints nullable="false"/>
+      </column>
+
+    </createTable>
+  </changeSet>
+
+  <!-- Create Chapter Table -->
+  <changeSet id="1" author="d.baltabaev">
+    <createTable tableName="chapter">
+
+      <column name="id" type="SERIAL">
+        <constraints primaryKey="true"/>
+      </column>
+
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="parent_legion" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="marines_count" type="INT">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="world" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
+    </createTable>
+
+    <sql>
+      ALTER TABLE chapter
+        ADD CONSTRAINT check_name CHECK (TRIM(name)!=''),
+        ADD CONSTRAINT check_marines_count CHECK (marines_count BETWEEN 1 AND 1000)
+    </sql>
+
+  </changeSet>
+
+
+  <!-- Create Spacemarine Table -->
+  <changeSet id="2" author="d.baltabaev">
+    <createTable tableName="spacemarine">
+
+      <column name="id" type="SERIAL">
+        <constraints primaryKey="true"/>
+      </column>
+
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="coordinates_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="creation_date" type="text">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="health" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="height" type="DOUBLE">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="category" type="VARCHAR(255)"/>
+
+      <column name="weapon_type" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="chapter_id" type="BIGINT"/>
+
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="spacemarine" baseColumnNames="coordinates_id"
+      constraintName="fk_spacemarine_coordinates__coordinates_id"
+      referencedTableName="coordinates"
+      referencedColumnNames="id"/>
+
+    <addForeignKeyConstraint baseTableName="spacemarine" baseColumnNames="chapter_id"
+      constraintName="fk_spacemarine_chapter__chapter_id"
+      referencedTableName="chapter"
+      referencedColumnNames="id"/>
+
+
+
+    <sql>
+      ALTER TABLE spacemarine
+        ADD CONSTRAINT check_name CHECK (TRIM(name)!=''),
+        ADD CONSTRAINT check_health CHECK (health>0),
+        ADD CONSTRAINT check_height CHECK (height>0);
+    </sql>
+
+  </changeSet>
+
+  <!-- Create Starship Table -->
+  <changeSet id="3" author="d.baltabaev">
+    <createTable tableName="starship">
+
+      <column name="id" type="SERIAL">
+        <constraints primaryKey="true"/>
+      </column>
+
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="max_speed" type="DOUBLE">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="spacemarine_id" type="BIGINT"/>
+
+    </createTable>
+
+    <sql>
+      ALTER TABLE starship
+        ADD CONSTRAINT check_name CHECK (TRIM(name)!=''),
+        ADD CONSTRAINT check_max_speed CHECK (max_speed>0)
+    </sql>
+
+    <addForeignKeyConstraint baseTableName="starship" baseColumnNames="spacemarine_id"
+      constraintName="fk_starship_spacemarine__spacemarine_id"
+      referencedTableName="spacemarine"
+      referencedColumnNames="id"/>
+
+  </changeSet>
+</databaseChangeLog>
