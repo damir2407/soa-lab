@@ -35,4 +35,4 @@ server:
   ssl:
     key-store: classpath:keystore/keystore.jks
     key-store-password: password
-    enabled: true
+    enabled: false

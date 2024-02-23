@@ -1,6 +1,6 @@
 package org.example.backend.rest
 
-import org.example.backend.config.JNDIConfig
+import org.example.backend.util.JndiUtils
 import org.example.ejb.data.ErrorResponse
 import org.example.ejb.data.StarShipCreateRequest
 import org.example.ejb.service.StarShipService
@@ -17,9 +17,7 @@ import javax.ws.rs.core.Response
 @Path("/v1/star-ships")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-open class StarShipController(
-    private val starShipService: StarShipService = JNDIConfig.starShipService()
-) {
+open class StarShipController {
 
     @POST
     open fun createStarShip(starShipCreateRequest: StarShipCreateRequest): Response {
@@ -41,7 +39,7 @@ open class StarShipController(
             ).build()
         }
 
-        val result = starShipService.createStarship(starShipCreateRequest)
+        val result = getService().createStarship(starShipCreateRequest)
         return if (result.code == 200) {
             Response.status(200).entity(result.id).build()
         } else {
@@ -54,7 +52,7 @@ open class StarShipController(
     open fun loadSpaceMarine(@PathParam("starShipId") starShipId: Long,
                              @PathParam("spaceMarineId") spaceMarineId: Long
     ): Response {
-        val result = starShipService.addMarineToStarship(starShipId, spaceMarineId)
+        val result = getService().addMarineToStarship(starShipId, spaceMarineId)
         return if (result.code == 200) {
             Response.status(200).entity("Успех!").build()
         } else {
@@ -65,7 +63,7 @@ open class StarShipController(
     @POST
     @Path("/{starShipId}/unload-all")
     open fun unloadAllFromStarShip(@PathParam("starShipId") starShipId: Long): Response {
-        val result = starShipService.unloadMarinesFromStarShip(starShipId)
+        val result = getService().unloadMarinesFromStarShip(starShipId)
         return if (result.code == 204) {
             Response.status(204).build()
         } else {
@@ -75,7 +73,11 @@ open class StarShipController(
 
     @GET
     open fun getAllStarShips(): Response {
-        val starShips = starShipService.getAllStarShips()
+        val starShips = getService().getAllStarShips()
         return Response.status(200).entity(starShips).build()
+    }
+
+    private fun getService(): StarShipService {
+        return JndiUtils.getFromContext("ejb:/EJB-1.0-SNAPSHOT/StarShipServiceImpl!org.example.ejb.service.StarShipService")
     }
 }
