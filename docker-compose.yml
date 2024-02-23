@@ -27,7 +27,7 @@ services:
   spacemarine1:
     container_name: spacemarine1
     build:
-      context: spacemarine
+      context: soa-spacemarine
       dockerfile: Dockerfile
     restart: no
     depends_on:
@@ -40,7 +40,7 @@ services:
   spacemarine2:
     container_name: spacemarine2
     build:
-      context: spacemarine
+      context: soa-spacemarine
       dockerfile: Dockerfile
     depends_on:
       - postgres
@@ -53,7 +53,7 @@ services:
   backend:
     container_name: backend
     build:
-      context: starship
+      context: soa-starship
       dockerfile: Dockerfile
     restart: no
     depends_on:
@@ -70,7 +70,7 @@ services:
       - postgres
       - spacemarine1
     build:
-      context: starship
+      context: soa-starship
       dockerfile: Dockerfile
     restart: no
     ports:
@@ -104,13 +104,12 @@ services:
       - "8600:8600/udp"
     command: consul agent -dev -config-dir /etc/consul.d
     volumes:
-      - ./spacemarine/consul.server.json:/etc/consul.d/consul.server.json
+      - ./soa-spacemarine/consul.server.json:/etc/consul.d/consul.server.json
 
 networks:
   default:
     name: consul_haproxy.network
     driver: bridge
-
 
 volumes:
   postgres_data:
