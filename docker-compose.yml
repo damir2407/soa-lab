@@ -1,0 +1,116 @@
+version: '3.7'
+
+services:
+
+  postgres:
+    container_name: postgres
+    image: 'postgres'
+    restart: always
+    environment:
+      POSTGRES_DB: soa
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "8321:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  frontend:
+    container_name: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    restart: no
+    ports:
+      - "8085:80"
+
+  spacemarine1:
+    container_name: spacemarine1
+    build:
+      context: spacemarine
+      dockerfile: Dockerfile
+    restart: no
+    depends_on:
+      - postgres
+    environment:
+      SERVER_PORT: 7008
+    ports:
+      - "7008:7008"
+
+  spacemarine2:
+    container_name: spacemarine2
+    build:
+      context: spacemarine
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    restart: no
+    environment:
+      SERVER_PORT: 7009
+    ports:
+      - "7009:7009"
+
+  backend:
+    container_name: backend
+    build:
+      context: starship
+      dockerfile: Dockerfile
+    restart: no
+    depends_on:
+      - postgres
+      - spacemarine1
+    ports:
+      - "7010:8080"
+      - "9990:9990"
+      - "8443:8443"
+
+  backend-second:
+    container_name: backend-second
+    depends_on:
+      - postgres
+      - spacemarine1
+    build:
+      context: starship
+      dockerfile: Dockerfile
+    restart: no
+    ports:
+      - "7022:8080"
+      - "10002:9990"
+      - "8455:8443"
+
+  haproxy:
+    image: haproxy:2.1.4
+    container_name: haproxy
+    restart: always
+    depends_on:
+      - backend
+      - backend-second
+      - spacemarine1
+      - spacemarine2
+    ports:
+      - "8100:8100"
+      - "8404:8404"
+      - "10000:10000"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - ./haproxy/site.pem:/etc/ssl/certs/site.pem
+
+  consul:
+    container_name: consul
+    image: consul:1.7.3
+    restart: unless-stopped
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    command: consul agent -dev -config-dir /etc/consul.d
+    volumes:
+      - ./spacemarine/consul.server.json:/etc/consul.d/consul.server.json
+
+networks:
+  default:
+    name: consul_haproxy.network
+    driver: bridge
+
+
+volumes:
+  postgres_data:
