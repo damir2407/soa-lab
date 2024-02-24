@@ -5,7 +5,7 @@
         <v-btn height="100px" plain
                style="margin-top: 20%; color: black; font-size: 30px; font-weight: bold; text-align: center; margin-left: 1px"
                @click="updatePage">
-          <pre>Лабораторная<br>работа №2</pre>
+          <pre>Лабораторная<br>работа №3</pre>
         </v-btn>
 
         <div style="margin-top: 15%; margin-left: 30px; margin-right: 20px">

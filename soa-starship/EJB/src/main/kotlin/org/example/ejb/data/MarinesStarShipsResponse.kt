@@ -4,9 +4,8 @@ import lombok.NoArgsConstructor
 import java.io.Serializable
 
 @NoArgsConstructor
-data class AddMarineToStarshipResponse(
+data class MarinesStarShipsResponse(
     val code: Int,
-    val spaceMarineResponse: Long? = null,
     val errorResponse: String? = null,
-    private val serialVersionUID: Long = -981571L
+    private val serialVersionUID: Long = -981548L
 ) : Serializable

@@ -1,14 +1,9 @@
 package org.example.ejb.service
 
-import org.example.ejb.data.AddMarineToStarshipResponse
-import org.example.ejb.data.ChapterRequest
-import org.example.ejb.data.CoordinatesRequest
 import org.example.ejb.data.CreateStarShipResponse
-import org.example.ejb.data.SpaceMarineResponse
-import org.example.ejb.data.SpaceMarineUpdateRequest
 import org.example.ejb.data.StarShipCreateRequest
 import org.example.ejb.data.StarShipResponse
-import org.example.ejb.data.UnloadMarinesFromStarshipResponse
+import org.example.ejb.data.MarinesStarShipsResponse
 import org.jboss.ejb3.annotation.Pool
 import java.io.FileInputStream
 import java.security.KeyStore
@@ -61,20 +56,19 @@ open class StarShipServiceImpl : StarShipService {
 
     }
 
-    override fun addMarineToStarship(starShipId: Long, spaceMarineId: Long): UnloadMarinesFromStarshipResponse {
-        getStarshipById(starShipId)
-            ?: return UnloadMarinesFromStarshipResponse(
-                code = 404,
-                errorResponse = "Не удалось найти звездный корабль по такому id!"
-            )
+    override fun addMarineToStarship(starShipId: Long, spaceMarineId: Long): MarinesStarShipsResponse {
+        getStarshipById(starShipId) ?: return MarinesStarShipsResponse(
+            code = 404,
+            errorResponse = "Не удалось найти звездный корабль по такому id!"
+        )
 
         return try {
             performUpdateMarine(spaceMarineId, starShipId)
-            UnloadMarinesFromStarshipResponse(
+            MarinesStarShipsResponse(
                 code = 200
             )
         } catch (ex: BadRequestException) {
-            UnloadMarinesFromStarshipResponse(
+            MarinesStarShipsResponse(
                 code = 400,
                 errorResponse = "Воздушный корабль с id = $starShipId уже занят!"
             )
@@ -82,9 +76,9 @@ open class StarShipServiceImpl : StarShipService {
 
     }
 
-    override fun unloadMarinesFromStarShip(starShipId: Long): UnloadMarinesFromStarshipResponse {
+    override fun unloadMarinesFromStarShip(starShipId: Long): MarinesStarShipsResponse {
         getStarshipById(starShipId)
-            ?: return UnloadMarinesFromStarshipResponse(
+            ?: return MarinesStarShipsResponse(
                 code = 404,
                 errorResponse = "Не удалось найти звездный корабль по такому id!"
 
@@ -100,7 +94,7 @@ open class StarShipServiceImpl : StarShipService {
             preparedStatement.setLong(1, starShipId)
 
             preparedStatement.executeUpdate()
-            return UnloadMarinesFromStarshipResponse(
+            return MarinesStarShipsResponse(
                 code = 204
             )
 
@@ -192,16 +186,6 @@ open class StarShipServiceImpl : StarShipService {
             .build()
     }
 
-
-    private fun performGetMarineById(id: Long): SpaceMarineResponse? {
-        return createSSLClient()
-            .target(MARINES_URL)
-            .path("/{id}")
-            .resolveTemplate("id", id)
-            .request(MediaType.APPLICATION_JSON)
-            .get(SpaceMarineResponse::class.java)
-    }
-
     private fun performUpdateMarine(id: Long, starShipId: Long): Long {
         return createSSLClient()
             .target(MARINES_URL)
@@ -211,35 +195,6 @@ open class StarShipServiceImpl : StarShipService {
                 "starShipId" to starShipId))
             .request(MediaType.APPLICATION_JSON)
             .put(Entity.json<Any>(Unit), Long::class.java)
-    }
-
-    private fun mapToSpaceMarineUpdateRequest(
-        spaceMarine: SpaceMarineResponse,
-        starShipId: Long
-    ): SpaceMarineUpdateRequest {
-        val coordinatesRequest = CoordinatesRequest(
-            spaceMarine.coordinates.x,
-            spaceMarine.coordinates.y
-        )
-
-        val chapterRequest = ChapterRequest(
-            spaceMarine.chapter.name,
-            spaceMarine.chapter.parentLegion,
-            spaceMarine.chapter.marinesCount,
-            spaceMarine.chapter.world
-        )
-
-
-        return SpaceMarineUpdateRequest(
-            spaceMarine.name,
-            coordinatesRequest,
-            spaceMarine.health,
-            spaceMarine.height,
-            spaceMarine.category,
-            spaceMarine.weaponType,
-            chapterRequest,
-            starShipId
-        )
     }
 
     companion object {
