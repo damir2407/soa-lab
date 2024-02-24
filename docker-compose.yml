@@ -93,6 +93,7 @@ services:
       - "8100:8100"
       - "8404:8404"
       - "10000:10000"
+      - "8200:8200"
     volumes:
       - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
       - ./haproxy/site.pem:/etc/ssl/certs/site.pem

@@ -36,7 +36,6 @@ class SpaceMarineController(
 
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): ResponseEntity<*> {
-        println("я пришел с id $id")
         return service.findViaExecution(id) {}.handle()
     }
 
@@ -110,7 +109,6 @@ class SpaceMarineController(
             }
 
             is SpaceMarineService.OperationResult.Ok -> {
-                println("отдаю $item")
                 ResponseEntity
                     .status(HttpStatus.OK).body(item)
             }

@@ -320,7 +320,7 @@ export default {
     },
 
     getSpacemarineByID: function (id) {
-      axios.get(`https://localhost:7008/api/v1/space-marines/` + id, null, {headers: this.getHeader()})
+      axios.get(`https://localhost:10000/api/v1/space-marines/` + id, null, {headers: this.getHeader()})
       .then(resp => {
         this.name = resp.data.name
         this.health = resp.data.health

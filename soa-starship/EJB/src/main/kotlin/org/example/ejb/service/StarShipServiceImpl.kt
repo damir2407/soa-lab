@@ -76,7 +76,7 @@ open class StarShipServiceImpl : StarShipService {
         } catch (ex: BadRequestException) {
             UnloadMarinesFromStarshipResponse(
                 code = 400,
-                errorResponse = "Произошла ошибка! Проверьте передаваемые параметры!"
+                errorResponse = "Воздушный корабль с id = $starShipId уже занят!"
             )
         }
 
@@ -243,7 +243,7 @@ open class StarShipServiceImpl : StarShipService {
     }
 
     companion object {
-        private val MARINES_URL = "https://haproxy:10000/api/v1/space-marines"
+        private val MARINES_URL = "http://haproxy:8200/api/v1/space-marines"
         private val DB_URL = "jdbc:postgresql://postgres:5432/soa"
         private val DB_USER = "postgres"
         private val DB_PASSWORD = "postgres"
