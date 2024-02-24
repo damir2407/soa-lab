@@ -21,7 +21,6 @@ class RestExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ErrorResponse {
-        System.err.println(e.message)
 
         val fields = e.bindingResult.fieldErrors
 
@@ -34,7 +33,6 @@ class RestExceptionHandler {
     @ExceptionHandler(ConstraintViolationException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleConstraintViolationException(e: ConstraintViolationException): ErrorResponse {
-        System.err.println(e.message)
         val response = ErrorResponse(
             errorMessage = "Неправильно введенны поля! ${
                 e.constraintViolations.joinToString {
@@ -49,7 +47,6 @@ class RestExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleHttpMessageNotReadableException(e: HttpMessageNotReadableException): ErrorResponse {
-        System.err.println(e.message)
         val fields = if (e.rootCause is MissingKotlinParameterException) {
             (e.rootCause as MissingKotlinParameterException).path.joinToString(".") { it.fieldName }
         } else if (e.cause is InvalidFormatException) {
@@ -67,7 +64,6 @@ class RestExceptionHandler {
     @ExceptionHandler(Exception::class, MethodArgumentTypeMismatchException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleException(e: Exception): ErrorResponse {
-        System.err.println(e.message)
         return ErrorResponse(
             timestamp = LocalDateTime.now().toString(),
             errorMessage = "Произошла ошибка! Попробуйте еще раз!"
