@@ -22,7 +22,10 @@ services:
       dockerfile: Dockerfile
     restart: no
     ports:
-      - "8085:80"
+      - "443:443"
+    volumes:
+      - ./frontend/site.pem:/etc/ssl/certs/site.pem
+      - ./frontend/site.pem:/etc/ssl/certs/site-key.pem
 
   spacemarine1:
     container_name: spacemarine1
