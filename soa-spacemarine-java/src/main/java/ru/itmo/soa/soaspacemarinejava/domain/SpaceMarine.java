@@ -1,5 +1,6 @@
 package ru.itmo.soa.soaspacemarinejava.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,6 +20,7 @@ public class SpaceMarine {
     private Long id;
     private String name;
     @OneToOne(cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "spacemarine"})
     private Coordinates coordinates;
     private Long health;
     private Double height;
@@ -27,6 +29,7 @@ public class SpaceMarine {
     @Enumerated(EnumType.STRING)
     private Weapon weaponType;
     @OneToOne(cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "spacemarine"})
     private Chapter chapter;
     private String creationDate;
 
