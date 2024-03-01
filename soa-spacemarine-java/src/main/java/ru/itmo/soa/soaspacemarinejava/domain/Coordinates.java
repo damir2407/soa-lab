@@ -7,6 +7,14 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Coordinates {
+    @Override
+    public String toString() {
+        return "Coordinates{" +
+                "id=" + id +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
+    }
 
     public Coordinates(Long id, Float x, Integer y) {
         this.id = id;

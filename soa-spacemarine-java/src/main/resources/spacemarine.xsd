@@ -1,0 +1,184 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://spring.io/guides/gs-producing-web-service"
+           targetNamespace="http://spring.io/guides/gs-producing-web-service" elementFormDefault="qualified">
+
+    <xs:complexType name="Coordinates">
+        <xs:sequence>
+            <xs:element name="x" type="xs:float"/>
+            <xs:element name="y" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="AstartesCategory">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SCOUT"/>
+            <xs:enumeration value="ASSAULT"/>
+            <xs:enumeration value="SUPPRESSOR"/>
+            <xs:enumeration value="HELIX"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Weapon">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MELTAGUN"/>
+            <xs:enumeration value="BOLT_PISTOL"/>
+            <xs:enumeration value="BOLT_RIFLE"/>
+            <xs:enumeration value="FLAMER"/>
+            <xs:enumeration value="HEAVY_FLAMER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="Chapter">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="parentLegion" type="xs:string"/>
+            <xs:element name="marinesCount" type="xs:int"/>
+            <xs:element name="world" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SpaceMarine">
+        <xs:sequence>
+            <xs:element name="id" type="xs:long"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="coordinates" type="tns:Coordinates"/>
+            <xs:element name="health" type="xs:long"/>
+            <xs:element name="height" type="xs:double"/>
+            <xs:element name="category" type="tns:AstartesCategory"/>
+            <xs:element name="weapon" type="tns:Weapon"/>
+            <xs:element name="chapter" type="tns:Chapter"/>
+            <xs:element name="creationDate" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="deleteSpaceMarineByIdResponse">
+        <xs:sequence>
+            <xs:element name="id" type="xs:long"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="countLowerChapterResponse">
+        <xs:sequence>
+            <xs:element name="number" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="Content">
+        <xs:sequence>
+            <xs:element name="SpaceMarine" maxOccurs="unbounded" type="tns:SpaceMarine"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:element name="getAllResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="content" type="tns:Content"/>
+                <xs:element name="totalPages" type="xs:int" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="includeStarshipResponse">
+        <xs:sequence>
+            <xs:element name="starShipId" type="xs:long"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="addSpaceMarineRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="coordinates" type="tns:Coordinates"/>
+                <xs:element name="health" type="xs:long"/>
+                <xs:element name="height" type="xs:double"/>
+                <xs:element name="category" type="tns:AstartesCategory" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="weapon" type="tns:Weapon"/>
+                <xs:element name="chapter" type="tns:Chapter"/>
+                <xs:element name="starShipId" type="xs:long" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getSpaceMarineByIdRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updateSpaceMarineByIdRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="coordinates" type="tns:Coordinates"/>
+                <xs:element name="health" type="xs:long"/>
+                <xs:element name="height" type="xs:double"/>
+                <xs:element name="category" type="tns:AstartesCategory" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="weapon" type="tns:Weapon"/>
+                <xs:element name="chapter" type="tns:Chapter"/>
+                <xs:element name="starShipId" type="xs:long" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="deleteSpaceMarineByIdRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="countLowerChapterRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="number" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="searchByNameContainsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="subString" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="searchByNameStartsWithRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="subString" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getAllRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string" default=""/>
+                <xs:element name="health" type="xs:long" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="height" type="xs:double" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="category" type="xs:string" default=""/>
+                <xs:element name="weapon" type="xs:string" default=""/>
+                <xs:element name="sortBy" type="xs:string" default="name"/>
+                <xs:element name="sortOrder" type="xs:string" default="DESC"/>
+                <xs:element name="page" type="xs:int" default="0"/>
+                <xs:element name="size" type="xs:int" default="5"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="includeStarshipRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+                <xs:element name="starShipId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

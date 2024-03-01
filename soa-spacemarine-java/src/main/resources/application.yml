@@ -6,23 +6,28 @@ spring:
     username: postgres
     password: postgres
     url: jdbc:postgresql://postgres:5432/soa
+    hikari:
+      maximum-pool-size: 10
   jpa:
     hibernate:
       ddl-auto: none
-  cloud:
-    consul:
-      host: consul
-      port: 8500
-      config:
-        enabled: true
-        import-check:
-          enabled: false
-      discovery:
-        instanceId: ${spring.application.name}:${random.value}
-        enabled: true
-        healthCheckPath: /my-health-check
-        healthCheckInterval: 20s
-        register: true
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans = true
+#  cloud:
+#    consul:
+#      host: consul
+#      port: 8500
+#      config:
+#        enabled: true
+#        import-check:
+#          enabled: false
+#      discovery:
+#        instanceId: ${spring.application.name}:${random.value}
+#        enabled: true
+#        healthCheckPath: /my-health-check
+#        healthCheckInterval: 20s
+#        register: true
 
 server:
   port: ${SERVER_PORT}

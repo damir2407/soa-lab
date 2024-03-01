@@ -1,77 +1,92 @@
 package ru.itmo.soa.soaspacemarinejava.service;
 
+import io.spring.guides.gs_producing_web_service.*;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import ru.itmo.soa.soaspacemarinejava.domain.*;
+import ru.itmo.soa.soaspacemarinejava.domain.AstartesCategory;
 import ru.itmo.soa.soaspacemarinejava.domain.Chapter;
 import ru.itmo.soa.soaspacemarinejava.domain.Coordinates;
 import ru.itmo.soa.soaspacemarinejava.domain.SpaceMarine;
-import ru.itmo.soa.soaspacemarinejava.domain.StarShip;
+import ru.itmo.soa.soaspacemarinejava.domain.Weapon;
 import ru.itmo.soa.soaspacemarinejava.exception.ResourceAlreadyExistException;
 import ru.itmo.soa.soaspacemarinejava.exception.ResourceNotFoundException;
 import ru.itmo.soa.soaspacemarinejava.repository.SpaceMarineRepository;
 import ru.itmo.soa.soaspacemarinejava.repository.StarShipRepository;
+import ru.itmo.soa.soaspacemarinejava.rest.SpaceMarineEndpoint;
 import ru.itmo.soa.soaspacemarinejava.rest.data.SpaceMarineRequest;
 
 @Service
 public class SpaceMarineService {
+    private static final Logger logger = LoggerFactory.getLogger(SpaceMarineService.class);
 
     private final SpaceMarineRepository spaceMarineRepository;
     private final StarShipRepository starShipRepository;
+    private final ModelMapper mapper;
 
-    public SpaceMarineService(SpaceMarineRepository spaceMarineRepository, StarShipRepository starShipRepository) {
+    public SpaceMarineService(SpaceMarineRepository spaceMarineRepository,
+                              StarShipRepository starShipRepository,
+                              ModelMapper mapper) {
         this.spaceMarineRepository = spaceMarineRepository;
         this.starShipRepository = starShipRepository;
+        this.mapper = mapper;
     }
 
-    public SpaceMarine create(SpaceMarineRequest createReq) {
+    public io.spring.guides.gs_producing_web_service.SpaceMarine create(AddSpaceMarineRequest createReq) {
         SpaceMarine spaceMarine = new SpaceMarine();
         spaceMarine.setName(createReq.getName());
         spaceMarine.setCoordinates(
-            new Coordinates(createReq.getCoordinates().getX(), createReq.getCoordinates().getY()));
+                new Coordinates(createReq.getCoordinates().getX(), createReq.getCoordinates().getY()));
         spaceMarine.setHealth(createReq.getHealth());
         spaceMarine.setHeight(createReq.getHeight());
-        spaceMarine.setCategory(createReq.getCategory());
-        spaceMarine.setWeaponType(createReq.getWeaponType());
+        spaceMarine.setCategory(AstartesCategory.valueOf(createReq.getCategory().name()));
+        spaceMarine.setWeaponType(Weapon.valueOf(createReq.getWeapon().name()));
         spaceMarine.setChapter(new Chapter(createReq.getChapter().getName(), createReq.getChapter().getParentLegion(),
-            createReq.getChapter().getMarinesCount(), createReq.getChapter().getWorld()));
+                createReq.getChapter().getMarinesCount(), createReq.getChapter().getWorld()));
         spaceMarine.setCreationDate(LocalDateTime.now().toString());
 
-        return spaceMarineRepository.save(spaceMarine);
+        SpaceMarine spaceMarine1 = spaceMarineRepository.save(spaceMarine);
+        return mapper.map(spaceMarine1, io.spring.guides.gs_producing_web_service.SpaceMarine.class);
     }
 
     @Transactional
-    public SpaceMarine update(SpaceMarineRequest updateReq, Long id) {
+    public io.spring.guides.gs_producing_web_service.SpaceMarine update(UpdateSpaceMarineByIdRequest updateReq) {
         StarShip starShipToUpdate = null;
         Long starShipId = updateReq.getStarShipId();
         if (starShipId != null) {
             starShipToUpdate = starShipRepository.findById(starShipId).orElseThrow(
-                () -> new ResourceNotFoundException("Воздушный корабль с id = " + starShipId + " не найден!"));
+                    () -> new ResourceNotFoundException("Воздушный корабль с id = " + starShipId + " не найден!"));
 
             if (starShipToUpdate.getSpaceMarine() != null) {
-                if (starShipToUpdate.getSpaceMarine().getId().equals(id)) {
-                    throw new ResourceAlreadyExistException("Воздушный десантник с id = " + id +
-                        " и так занял корабль с id = " + starShipId + "!");
+                if (starShipToUpdate.getSpaceMarine().getId().equals(updateReq.getId())) {
+                    throw new ResourceAlreadyExistException("Воздушный десантник с id = " + updateReq.getId() +
+                            " и так занял корабль с id = " + starShipId + "!");
                 }
                 throw new ResourceAlreadyExistException("Воздушный корабль с id = " + starShipId + " уже занят!");
             }
         }
 
-        SpaceMarine spaceMarine = spaceMarineRepository.findById(id).orElseThrow(
-            () -> new ResourceNotFoundException("Воздушный десантник с id = " + id + " не найден!"));
+        SpaceMarine spaceMarine = spaceMarineRepository.findById(updateReq.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("Воздушный десантник с id = " + updateReq.getId() + " не найден!"));
 
         spaceMarine.setName(updateReq.getName());
         spaceMarine.setCoordinates(
-            new Coordinates(updateReq.getCoordinates().getX(), updateReq.getCoordinates().getY()));
+                new Coordinates(updateReq.getCoordinates().getX(), updateReq.getCoordinates().getY()));
         spaceMarine.setHealth(updateReq.getHealth());
         spaceMarine.setHeight(updateReq.getHeight());
-        spaceMarine.setCategory(updateReq.getCategory());
-        spaceMarine.setWeaponType(updateReq.getWeaponType());
+        spaceMarine.setCategory(AstartesCategory.valueOf(updateReq.getCategory().value()));
+        spaceMarine.setWeaponType(Weapon.valueOf(updateReq.getWeapon().value()));
         spaceMarine.getChapter().setName(updateReq.getChapter().getName());
         spaceMarine.getChapter().setParentLegion(updateReq.getChapter().getParentLegion());
         spaceMarine.getChapter().setMarinesCount(updateReq.getChapter().getMarinesCount());
@@ -88,7 +103,7 @@ public class SpaceMarineService {
             starShipRepository.save(starShipToUpdate);
         }
 
-        return marine;
+        return mapper.map(marine, io.spring.guides.gs_producing_web_service.SpaceMarine.class);
     }
 
     public List<SpaceMarine> searchByNameContains(String substring) {
@@ -99,40 +114,63 @@ public class SpaceMarineService {
         return spaceMarineRepository.findAllByNameStartsWith(substring);
     }
 
-    public int countChapterLower(int number) {
-        return spaceMarineRepository.countAllByChapterMarinesCountLessThan(number);
+    public CountLowerChapterResponse countChapterLower(CountLowerChapterRequest number) {
+        var res = spaceMarineRepository.countAllByChapterMarinesCountLessThan(number.getNumber());
+        CountLowerChapterResponse response = new CountLowerChapterResponse();
+        response.setNumber(res);
+        return response;
     }
 
     public SpaceMarine findById(Long id) {
-        return spaceMarineRepository.findById(id).orElseThrow(
-            () -> new ResourceNotFoundException("Воздушный десантник с id = " + id + " не найден!"));
+        SpaceMarine spaceMarine = spaceMarineRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Воздушный десантник с id = " + id + " не найден!"));
+        return spaceMarine;
     }
 
-    public Long deleteById(Long id) {
-        spaceMarineRepository.findById(id).orElseThrow(
-            () -> new ResourceNotFoundException("Воздушный десантник с id = " + id + " не найден!"));
-
-        spaceMarineRepository.deleteById(id);
-        return id;
+    public io.spring.guides.gs_producing_web_service.SpaceMarine findById(GetSpaceMarineByIdRequest id) {
+        SpaceMarine spaceMarine = spaceMarineRepository.findById(id.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("Воздушный десантник с id = " + id.getId() + " не найден!"));
+        return mapper.map(spaceMarine, io.spring.guides.gs_producing_web_service.SpaceMarine.class);
     }
 
-    public Page<SpaceMarine> fetchSpaceMarineDataAsPageWithFilteringAndSorting(
-        String name, Long health, Double height, String category, String weaponType,
-        String sortBy, String sortOrder, int page, int size) {
+    public DeleteSpaceMarineByIdResponse deleteById(DeleteSpaceMarineByIdRequest id) {
+        spaceMarineRepository.findById(id.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("Воздушный десантник с id = " + id.getId() + " не найден!"));
 
-        PageRequest pageable = PageRequest.of(page, size, Sort.by(createSortOrder(sortBy, sortOrder)));
+        spaceMarineRepository.deleteById(id.getId());
+        DeleteSpaceMarineByIdResponse response = new DeleteSpaceMarineByIdResponse();
+        response.setId(id.getId());
+        return response;
+    }
 
-        if (health != null && height == null) {
-            return spaceMarineRepository.findByDefaultFieldsAndHealth(name, category, weaponType, health, pageable);
+    public GetAllResponse fetchSpaceMarineDataAsPageWithFilteringAndSorting(GetAllRequest request) {
+
+        PageRequest pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(createSortOrder(request.getSortBy(), request.getSortOrder())));
+        Page<SpaceMarine> spaceMarines = null;
+        if (request.getHealth() != null && request.getHeight() == null) {
+            spaceMarines = spaceMarineRepository.findByDefaultFieldsAndHealth(request.getName(), request.getCategory(), request.getWeapon(), request.getHealth(), pageable);
         }
-        if (health == null && height != null) {
-            return spaceMarineRepository.findByDefaultFieldsAndHeight(name, category, weaponType, height, pageable);
+        if (request.getHealth() == null && request.getHeight() != null) {
+            spaceMarines = spaceMarineRepository.findByDefaultFieldsAndHeight(request.getName(), request.getCategory(), request.getWeapon(), request.getHeight(), pageable);
         }
-        if (health != null && height != null) {
-            return spaceMarineRepository.findByAllFields(name, category, weaponType, health, height, pageable);
+        if (request.getHealth() != null && request.getHeight() != null) {
+            spaceMarines = spaceMarineRepository.findByAllFields(request.getName(), request.getCategory(), request.getWeapon(), request.getHealth(), request.getHeight(), pageable);
         }
 
-        return spaceMarineRepository.findByDefaultFields(name, category, weaponType, pageable);
+        spaceMarines = spaceMarineRepository.findByDefaultFields(request.getName(), request.getCategory(), request.getWeapon(), pageable);
+
+        GetAllResponse response = new GetAllResponse();
+        response.setTotalPages(spaceMarines.getTotalPages());
+        List<io.spring.guides.gs_producing_web_service.SpaceMarine> spaceMarines1 = new ArrayList<>();
+
+        for (SpaceMarine spaceMarine : spaceMarines.getContent()) {
+            SpaceMarine spaceMarine1 = findById(spaceMarine.getId());
+            spaceMarines1.add(mapper.map(spaceMarine1, io.spring.guides.gs_producing_web_service.SpaceMarine.class));
+        }
+        Content content = new Content();
+        content.getSpaceMarine().addAll(spaceMarines1);
+        response.setContent(content);
+        return response;
     }
 
     private List<Sort.Order> createSortOrder(String sort, String sortDirection) {
@@ -142,24 +180,25 @@ public class SpaceMarineService {
         return sorts;
     }
 
-    public Long starShipInclude(Long id, Long starShipId) {
-        StarShip starShipToUpdate = starShipRepository.findById(starShipId).orElseThrow(
-            () -> new ResourceNotFoundException("Воздушный корабль с id = " + starShipId + " не найден!"));
+    public IncludeStarshipResponse starShipInclude(IncludeStarshipRequest request) {
+        StarShip starShipToUpdate = starShipRepository.findById(request.getStarShipId()).orElseThrow(
+                () -> new ResourceNotFoundException("Воздушный корабль с id = " + request.getStarShipId() + " не найден!"));
 
         if (starShipToUpdate.getSpaceMarine() != null) {
-            if (starShipToUpdate.getSpaceMarine().getId().equals(id)) {
-                throw new ResourceAlreadyExistException("Воздушный десантник с id = " + id +
-                    " и так занял корабль с id = " + starShipId + "!");
+            if (starShipToUpdate.getSpaceMarine().getId().equals(request.getId())) {
+                throw new ResourceAlreadyExistException("Воздушный десантник с id = " + request.getId() +
+                        " и так занял корабль с id = " + request.getStarShipId() + "!");
             }
-            throw new ResourceAlreadyExistException("Воздушный корабль с id = " + starShipId + " уже занят!");
+            throw new ResourceAlreadyExistException("Воздушный корабль с id = " + request.getStarShipId() + " уже занят!");
         }
 
-        SpaceMarine spaceMarine = spaceMarineRepository.findById(id).orElseThrow(
-            () -> new ResourceNotFoundException("Воздушный десантник с id = " + id + " не найден!"));
+        SpaceMarine spaceMarine = spaceMarineRepository.findById(request.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("Воздушный десантник с id = " + request.getId() + " не найден!"));
 
         starShipToUpdate.setSpaceMarine(spaceMarine);
         starShipRepository.save(starShipToUpdate);
-
-        return starShipId;
+        IncludeStarshipResponse response = new IncludeStarshipResponse();
+        response.setStarShipId(response.getStarShipId());
+        return response;
     }
 }

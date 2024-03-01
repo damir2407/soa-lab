@@ -1,26 +1,32 @@
 package ru.itmo.soa.soaspacemarinejava.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
 
 @Entity
 @Table(name = "spacemarine")
 public class SpaceMarine {
+    @Override
+    public String toString() {
+        return "SpaceMarine{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", coordinates=" + coordinates +
+                ", health=" + health +
+                ", height=" + height +
+                ", category=" + category +
+                ", weaponType=" + weaponType +
+                ", chapter=" + chapter +
+                ", creationDate='" + creationDate + '\'' +
+                '}';
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "spacemarine"})
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Coordinates coordinates;
     private Long health;
     private Double height;
@@ -28,8 +34,7 @@ public class SpaceMarine {
     private AstartesCategory category;
     @Enumerated(EnumType.STRING)
     private Weapon weaponType;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "spacemarine"})
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Chapter chapter;
     private String creationDate;
 

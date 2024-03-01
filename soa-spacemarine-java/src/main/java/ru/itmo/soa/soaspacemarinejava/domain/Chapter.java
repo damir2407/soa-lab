@@ -7,6 +7,16 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Chapter {
+    @Override
+    public String toString() {
+        return "Chapter{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", parentLegion='" + parentLegion + '\'' +
+                ", marinesCount=" + marinesCount +
+                ", world='" + world + '\'' +
+                '}';
+    }
 
     public Chapter() {
     }
