@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: spacemarine
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://postgres:5432/soa
+  jpa:
+    hibernate:
+      ddl-auto: none
+  cloud:
+    consul:
+      host: consul
+      port: 8500
+      config:
+        enabled: true
+        import-check:
+          enabled: false
+      discovery:
+        instanceId: ${spring.application.name}:${random.value}
+        enabled: true
+        healthCheckPath: /my-health-check
+        healthCheckInterval: 20s
+        register: true
+
+server:
+  port: ${SERVER_PORT}
+  servlet:
+    context-path: /
+    session:
+      timeout: 600s
+  error:
+    include-message: always
+  ssl:
+    key-store: classpath:keystore/keystore.jks
+    key-store-password: password
+    enabled: false
