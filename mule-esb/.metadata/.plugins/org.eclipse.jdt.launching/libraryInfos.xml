@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<libraryInfos>
+    <libraryInfo home="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home" version="1.8.0_382">
+        <bootpath>
+            <entry path="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home/jre/lib/resources.jar"/>
+            <entry path="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home/jre/lib/rt.jar"/>
+            <entry path="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home/jre/lib/sunrsasign.jar"/>
+            <entry path="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home/jre/lib/jsse.jar"/>
+            <entry path="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home/jre/lib/jce.jar"/>
+            <entry path="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home/jre/lib/charsets.jar"/>
+            <entry path="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home/jre/lib/jfr.jar"/>
+            <entry path="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home/jre/classes"/>
+        </bootpath>
+        <extensionDirs>
+            <entry path="/Users/d.baltabaev/Library/Java/Extensions"/>
+            <entry path="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home/jre/lib/ext"/>
+            <entry path="/Library/Java/Extensions"/>
+            <entry path="/Network/Library/Java/Extensions"/>
+            <entry path="/System/Library/Java/Extensions"/>
+            <entry path="/usr/lib/java"/>
+        </extensionDirs>
+        <endorsedDirs>
+            <entry path="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.v8.macosx.x86_64_1.2.3/Contents/Home/jre/lib/endorsed"/>
+        </endorsedDirs>
+    </libraryInfo>
+    <libraryInfo home="/Users/d.baltabaev/Library/Java/JavaVirtualMachines/openjdk-21.0.2/Contents/Home" version="21.0.2"/>
+    <libraryInfo home="/Users/d.baltabaev/Library/Java/JavaVirtualMachines/corretto-11.0.22/Contents/Home" version="11.0.22"/>
+    <libraryInfo home="/Users/d.baltabaev/Library/Java/JavaVirtualMachines/jbr-17.0.9/Contents/Home" version="17.0.9"/>
+    <libraryInfo home="/Users/d.baltabaev/Applications/AnypointStudio.app/Contents/Eclipse/plugins/org.mule.tooling.jdk.macosx.x86_64_1.2.3/Contents/Home" version="11.0.20.1"/>
+    <libraryInfo home="/Users/d.baltabaev/Library/Java/JavaVirtualMachines/corretto-17.0.10/Contents/Home" version="17.0.10"/>
+    <libraryInfo home="/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home" version="17.0.10"/>
+</libraryInfos>
