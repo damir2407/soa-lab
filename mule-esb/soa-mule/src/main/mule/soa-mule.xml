@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<tls:context name="TLS_Context" doc:name="TLS Context" doc:id="61dc3761-1f69-464b-b266-2f0aa8ae9b7f" >
+		<tls:trust-store path="/Users/d.baltabaev/ITMO/SOA/soa/soa/mule-esb/soa-mule/src/main/mule/keystore.jks" password="password" type="pkcs12" insecure="true" />
+		<tls:key-store type="pkcs12" path="/Users/d.baltabaev/ITMO/SOA/soa/soa/mule-esb/soa-mule/src/main/mule/keystore.jks" alias="soa" keyPassword="password" password="password" />
+	</tls:context>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="008d23c5-2413-40cc-a9b1-af3363fd951c" basePath="/api/v1" responseStreamingMode="AUTO" outputMimeType="" primaryNodeOnly="false" path="" outputEncoding="" config-ref="" allowedMethods="" >
+		<http:listener-connection protocol="HTTPS" host="0.0.0.0" port="7766" tlsContext="TLS_Context" />
+	</http:listener-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="ff572ed9-f739-46d9-8ede-9d53925ee46f" >
+		<wsc:connection wsdlLocation="http://localhost:7008/ws/spacemarine.wsdl" service="dnasndas" port="dsandnas" address="asndsanda" />
+	</wsc:config>
+	<flow name="getSpaceMarine" doc:id="5bd87670-5ad7-48e7-8946-552df5471b2c" >
+		<http:listener doc:name="Listener" doc:id="66f5769e-f895-49f2-b1ea-9ea4cb08081c" config-ref="HTTP_Listener_config" path="/space-marines/{id}" allowedMethods="GET"/>
+		<ee:transform doc:name="Transform Message" doc:id="15327c72-610a-4b2f-9d4f-bfab2461f224" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/xml skipNullOn="everywhere"
+ns ns0 http://spring.io/guides/gs-producing-web-service
+---
+{
+	ns0#getSpaceMarineByIdRequest: {
+		ns0#id: attributes.uriParams.id
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="aedd2165-a122-4856-b8f8-73b8466897a4" config-ref="Web_Service_Consumer_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="dc311c90-0bed-496e-bfb3-6b70b5ef2a50" />
+		<ee:transform doc:name="Transform Message" doc:id="69cfa696-e73e-4e79-9e85-126d73a72cd6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://spring.io/guides/gs-producing-web-service
+output application/json
+---
+payload.body.ns0#SpaceMarine]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="createSpaceMarine" doc:id="d522d25e-c6af-4bb5-be94-0056663a0ba6" >
+		<http:listener doc:name="Listener" doc:id="fc8de779-5606-42a1-ba8a-29d6ee7b3eb9" config-ref="HTTP_Listener_config" path="/space-marines" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="3427db05-c8b5-47ac-8e13-9f322632bd6a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/xml
+ns ns0 http://spring.io/guides/gs-producing-web-service
+---
+{
+	ns0#addSpaceMarineRequest: {
+		ns0#name: payload.name,
+		ns0#coordinates: {
+			ns0#x: payload.coordinates.x,
+			ns0#y: payload.coordinates.y
+		},
+		ns0#health: payload.health,
+		ns0#height: payload.height,
+		ns0#category: payload.category,
+		ns0#weapon: payload.weaponType,
+		ns0#chapter: {
+			ns0#name: payload.chapter.name,
+			ns0#parentLegion: payload.chapter.parentLegion,
+			ns0#marinesCount: payload.chapter.marinesCount,
+		 	ns0#world: payload.chapter.world,
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="c3076817-abd6-4e33-a272-422fb03457e0" config-ref="Web_Service_Consumer_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="49101949-5608-4bdc-aeef-923a2d8c7d31" />
+		<ee:transform doc:name="Transform Message" doc:id="00c329ae-780e-4c7f-910a-d6e59c4c06c7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://spring.io/guides/gs-producing-web-service
+output application/json
+---
+payload.body.ns0#SpaceMarine]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="updateSpaceMarine" doc:id="61357220-5928-4144-bd2c-4d6a3f145abf" >
+		<http:listener doc:name="Listener" doc:id="c4a2ca69-1288-4465-baa7-ff37856adafe" config-ref="HTTP_Listener_config" path="/space-marines/{id}" allowedMethods="PUT" />
+		<ee:transform doc:name="Transform Message" doc:id="852439c8-42fd-48bc-9334-ccf3fa48d428" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/xml
+ns ns0 http://spring.io/guides/gs-producing-web-service
+---
+{
+	ns0#updateSpaceMarineByIdRequest: {
+		ns0#id: attributes.uriParams.id,
+		ns0#name: payload.name,
+		ns0#coordinates: {
+			ns0#x: payload.coordinates.x,
+			ns0#y: payload.coordinates.y
+		},
+		ns0#health: payload.health,
+		ns0#height: payload.height,
+		ns0#category: payload.category,
+		ns0#weapon: payload.weaponType,
+		ns0#chapter: {
+			ns0#name: payload.chapter.name,
+			ns0#parentLegion: payload.chapter.parentLegion,
+			ns0#marinesCount: payload.chapter.marinesCount,
+		 	ns0#world: payload.chapter.world,
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="5585e807-78f7-46a1-b549-b040221fe21b" config-ref="Web_Service_Consumer_Config" />
+		<logger level="INFO" doc:name="Logger" doc:id="ddc780ad-492d-4a12-9f21-21f2b5f1a8fe" />
+		<ee:transform doc:name="Transform Message1" doc:id="d8c53f17-4f00-4338-8e7b-d04aa82da52c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://spring.io/guides/gs-producing-web-service
+output application/json
+---
+payload.body.ns0#SpaceMarine]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="deleteSpaceMarine" doc:id="5d79ad13-b0a9-4ae7-893d-eda5ec2c01d6" >
+		<http:listener doc:name="Listener" doc:id="4875c4c6-da49-4200-9303-446327ed85f4" config-ref="HTTP_Listener_config" path="/space-marines/{id}" allowedMethods="DELETE" />
+		<ee:transform doc:name="Transform Message" doc:id="e7c21d96-1fa0-478c-900d-7e51591f9062" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/xml skipNullOn="everywhere"
+ns ns0 http://spring.io/guides/gs-producing-web-service
+---
+{
+	ns0#deleteSpaceMarineByIdRequest: {
+		ns0#id: attributes.uriParams.id
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="" doc:name="Consume" doc:id="c01cd05e-cffb-401e-9e30-8608ccad1ae6" config-ref="Web_Service_Consumer_Config" />
+		<logger level="INFO" doc:name="Logger" doc:id="5bfae9b9-b9b6-4520-8b2e-a8357511becc" />
+		<ee:transform doc:name="Transform Message1" doc:id="4ef9f008-0190-485b-9183-d13e2fa3e3b3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://spring.io/guides/gs-producing-web-service
+output application/json
+---
+payload.body.ns0#SpaceMarine]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="countChapterLower" doc:id="77e958a9-9589-48fe-8a58-9b8f2627bdc7" >
+		<http:listener doc:name="Listener" doc:id="83a7b8cc-ba0a-4768-a227-e3b6920aed5c" config-ref="HTTP_Listener_config" path="/space-marines/count-chapter-lower" allowedMethods="GET" />
+		<ee:transform doc:name="Transform Message" doc:id="8e375b5e-b2ff-46d7-afcb-9dbff5cf0db5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/xml skipNullOn="everywhere"
+ns ns0 http://spring.io/guides/gs-producing-web-service
+---
+{
+	ns0#countLowerChapterRequest: {
+		ns0#id: attributes.queryParams.id
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="" doc:name="Consume" doc:id="30371995-5cfe-4c48-bab3-c5bd53ac212a" config-ref="Web_Service_Consumer_Config" />
+		<logger level="INFO" doc:name="Logger" doc:id="06efbb62-0bae-4222-8666-da672b0be251" />
+		<ee:transform doc:name="Transform Message1" doc:id="1500c2d7-58a3-46fc-bcd0-38a80330b8ba" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://spring.io/guides/gs-producing-web-service
+output application/json
+---
+payload.body.ns0#SpaceMarine]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getSpaceMarines" doc:id="e050c5d1-8a18-41d1-9f70-edb63a4cdc5f" >
+		<http:listener doc:name="Listener" doc:id="44f669b8-0916-4777-80f7-44fa86b10c5e" config-ref="HTTP_Listener_config" path="/space-marines" allowedMethods="GET" />
+		<ee:transform doc:name="Transform Message" doc:id="f4da1f15-a096-4012-aa84-a2d36955f883" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/xml
+ns ns0 http://spring.io/guides/gs-producing-web-service
+---
+{
+	ns0#getAllRequest: {
+		ns0#name: attributes.queryParams.name,
+		ns0#health: attributes.queryParams.health,
+		ns0#height: attributes.queryParams.height,
+		ns0#category: attributes.queryParams.category,
+		ns0#weapon: attributes.queryParams.weaponType,
+		ns0#sortBy: attributes.queryParams.sortBy,
+		ns0#sortOrder: attributes.queryParams.sortOrder,
+		ns0#page: attributes.queryParams.page,
+		ns0#size: attributes.queryParams.size,
+		
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="" doc:name="Consume" doc:id="90aa5824-eccf-45f6-aba0-acd43b819c41" config-ref="Web_Service_Consumer_Config" />
+		<logger level="INFO" doc:name="Logger" doc:id="ca52f2f7-62b8-4d2d-a982-d0a501549632" />
+		<ee:transform doc:name="Transform Message1" doc:id="b9085689-99eb-4d03-a020-cb112d7f7c08" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://spring.io/guides/gs-producing-web-service
+output application/json
+---
+payload.body.ns0#SpaceMarine]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="includeStarShip" doc:id="8eed682f-d355-4b02-9c66-b0e2cf4ab216" >
+		<http:listener doc:name="Listener" doc:id="70f01eab-97d1-48da-bf40-c2ee2669eb21" config-ref="HTTP_Listener_config" path="/space-marines/{id}/starship-include/{starShipId}" allowedMethods="PUT" />
+		<ee:transform doc:name="Transform Message" doc:id="7a4c7dd3-7182-4090-a7f4-aa9dfc673147" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/xml
+ns ns0 http://spring.io/guides/gs-producing-web-service
+---
+{
+	ns0#includeStarshipRequest: {
+		ns0#id: attributes.uriParams.id,
+		ns0#starShipId: attributes.uriParams.starShipId
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="" doc:name="Consume" doc:id="3a9a5bc7-2270-4826-9fb1-3a5d67af9e64" config-ref="Web_Service_Consumer_Config" />
+		<logger level="INFO" doc:name="Logger" doc:id="7aaad1cb-d093-4af7-9919-a7096d4afec6" />
+		<ee:transform doc:name="Transform Message1" doc:id="1c8a5709-a323-4e53-ae98-1d5704015492" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+ns ns0 http://spring.io/guides/gs-producing-web-service
+output application/json
+---
+payload.body.ns0#SpaceMarine]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
