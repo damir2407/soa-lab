@@ -43,7 +43,7 @@ public class SpaceMarineService {
         this.mapper = mapper;
     }
 
-    public io.spring.guides.gs_producing_web_service.SpaceMarine create(AddSpaceMarineRequest createReq) {
+    public AddSpaceMarineResponse create(AddSpaceMarineRequest createReq) {
         SpaceMarine spaceMarine = new SpaceMarine();
         spaceMarine.setName(createReq.getName());
         spaceMarine.setCoordinates(
@@ -57,11 +57,14 @@ public class SpaceMarineService {
         spaceMarine.setCreationDate(LocalDateTime.now().toString());
 
         SpaceMarine spaceMarine1 = spaceMarineRepository.save(spaceMarine);
-        return mapper.map(spaceMarine1, io.spring.guides.gs_producing_web_service.SpaceMarine.class);
+        var sp = mapper.map(spaceMarine1, io.spring.guides.gs_producing_web_service.SpaceMarine.class);
+        AddSpaceMarineResponse addSpaceMarineResponse = new AddSpaceMarineResponse();
+        addSpaceMarineResponse.setSpaceMarine(sp);
+        return addSpaceMarineResponse;
     }
 
     @Transactional
-    public io.spring.guides.gs_producing_web_service.SpaceMarine update(UpdateSpaceMarineByIdRequest updateReq) {
+    public UpdateSpaceMarineByIdResponse update(UpdateSpaceMarineByIdRequest updateReq) {
         StarShip starShipToUpdate = null;
         Long starShipId = updateReq.getStarShipId();
         if (starShipId != null) {
@@ -102,16 +105,10 @@ public class SpaceMarineService {
             starShipToUpdate.setSpaceMarine(marine);
             starShipRepository.save(starShipToUpdate);
         }
-
-        return mapper.map(marine, io.spring.guides.gs_producing_web_service.SpaceMarine.class);
-    }
-
-    public List<SpaceMarine> searchByNameContains(String substring) {
-        return spaceMarineRepository.findAllByNameContaining(substring);
-    }
-
-    public List<SpaceMarine> searchByNameStartsWith(String substring) {
-        return spaceMarineRepository.findAllByNameStartsWith(substring);
+        UpdateSpaceMarineByIdResponse response = new UpdateSpaceMarineByIdResponse();
+        var sp = mapper.map(marine, io.spring.guides.gs_producing_web_service.SpaceMarine.class);
+        response.setSpaceMarine(sp);
+        return response;
     }
 
     public CountLowerChapterResponse countChapterLower(CountLowerChapterRequest number) {
@@ -127,10 +124,13 @@ public class SpaceMarineService {
         return spaceMarine;
     }
 
-    public io.spring.guides.gs_producing_web_service.SpaceMarine findById(GetSpaceMarineByIdRequest id) {
+    public GetSpaceMarineByIdResponse findById(GetSpaceMarineByIdRequest id) {
         SpaceMarine spaceMarine = spaceMarineRepository.findById(id.getId()).orElseThrow(
                 () -> new ResourceNotFoundException("Воздушный десантник с id = " + id.getId() + " не найден!"));
-        return mapper.map(spaceMarine, io.spring.guides.gs_producing_web_service.SpaceMarine.class);
+        GetSpaceMarineByIdResponse response = new GetSpaceMarineByIdResponse();
+        var sp = mapper.map(spaceMarine, io.spring.guides.gs_producing_web_service.SpaceMarine.class);
+        response.setSpaceMarine(sp);
+        return response;
     }
 
     public DeleteSpaceMarineByIdResponse deleteById(DeleteSpaceMarineByIdRequest id) {

@@ -28,23 +28,23 @@ public class SpaceMarineEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "addSpaceMarineRequest")
     @ResponsePayload
-    public JAXBElement<SpaceMarine> addSpaceMarine(@RequestPayload JAXBElement<AddSpaceMarineRequest> addSpaceMarineRequest) {
+    public JAXBElement<AddSpaceMarineResponse> addSpaceMarine(@RequestPayload JAXBElement<AddSpaceMarineRequest> addSpaceMarineRequest) {
         var res =spaceMarineService.create(addSpaceMarineRequest.getValue());
-        return new JAXBElement<>(new QName(SpaceMarine.class.getSimpleName()), SpaceMarine.class, res);
+        return new JAXBElement<>(new QName(AddSpaceMarineResponse.class.getSimpleName()), AddSpaceMarineResponse.class, res);
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getSpaceMarineByIdRequest")
     @ResponsePayload
-    public JAXBElement<SpaceMarine> getSpaceMarine(@RequestPayload JAXBElement<GetSpaceMarineByIdRequest> addSpaceMarineRequest) {
+    public JAXBElement<GetSpaceMarineByIdResponse> getSpaceMarine(@RequestPayload JAXBElement<GetSpaceMarineByIdRequest> addSpaceMarineRequest) {
         var res = spaceMarineService.findById(addSpaceMarineRequest.getValue());
-        return new JAXBElement<>(new QName(SpaceMarine.class.getSimpleName()), SpaceMarine.class, res);
+        return new JAXBElement<>(new QName(GetSpaceMarineByIdResponse.class.getSimpleName()), GetSpaceMarineByIdResponse.class, res);
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "updateSpaceMarineByIdRequest")
     @ResponsePayload
-    public JAXBElement<SpaceMarine> updateSpaceMarine(@RequestPayload JAXBElement<UpdateSpaceMarineByIdRequest> addSpaceMarineRequest) {
+    public JAXBElement<UpdateSpaceMarineByIdResponse> updateSpaceMarine(@RequestPayload JAXBElement<UpdateSpaceMarineByIdRequest> addSpaceMarineRequest) {
         var res = spaceMarineService.update(addSpaceMarineRequest.getValue());
-        return new JAXBElement<>(new QName(SpaceMarine.class.getSimpleName()), SpaceMarine.class, res);
+        return new JAXBElement<>(new QName(UpdateSpaceMarineByIdResponse.class.getSimpleName()), UpdateSpaceMarineByIdResponse.class, res);
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "deleteSpaceMarineByIdRequest")

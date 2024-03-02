@@ -50,6 +50,30 @@
         </xs:sequence>
     </xs:complexType>
 
+    <xs:element name="addSpaceMarineResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="spaceMarine" type="tns:SpaceMarine"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updateSpaceMarineByIdResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="spaceMarine" type="tns:SpaceMarine"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getSpaceMarineByIdResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="spaceMarine" type="tns:SpaceMarine"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:complexType name="deleteSpaceMarineByIdResponse">
         <xs:sequence>
             <xs:element name="id" type="xs:long"/>
