@@ -74,25 +74,27 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:complexType name="deleteSpaceMarineByIdResponse">
-        <xs:sequence>
-            <xs:element name="id" type="xs:long"/>
-        </xs:sequence>
-    </xs:complexType>
+    <xs:element name="deleteSpaceMarineByIdResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
-    <xs:complexType name="countLowerChapterResponse">
-        <xs:sequence>
-            <xs:element name="number" type="xs:int"/>
-        </xs:sequence>
-    </xs:complexType>
-
+    <xs:element name="countLowerChapterResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="number" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
     <xs:complexType name="Content">
         <xs:sequence>
             <xs:element name="SpaceMarine" maxOccurs="unbounded" type="tns:SpaceMarine"/>
         </xs:sequence>
     </xs:complexType>
-
 
     <xs:element name="getAllResponse">
         <xs:complexType>
@@ -103,11 +105,13 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:complexType name="includeStarshipResponse">
-        <xs:sequence>
-            <xs:element name="starShipId" type="xs:long"/>
-        </xs:sequence>
-    </xs:complexType>
+    <xs:element name="includeStarshipResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="starShipId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
     <xs:element name="addSpaceMarineRequest">
         <xs:complexType>
