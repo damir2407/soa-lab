@@ -22,10 +22,10 @@ import ru.itmo.soa.soaspacemarinejava.domain.SpaceMarine;
 import ru.itmo.soa.soaspacemarinejava.domain.Weapon;
 import ru.itmo.soa.soaspacemarinejava.exception.ResourceAlreadyExistException;
 import ru.itmo.soa.soaspacemarinejava.exception.ResourceNotFoundException;
+import ru.itmo.soa.soaspacemarinejava.exception.ServiceFault;
+import ru.itmo.soa.soaspacemarinejava.exception.ServiceFaultException;
 import ru.itmo.soa.soaspacemarinejava.repository.SpaceMarineRepository;
 import ru.itmo.soa.soaspacemarinejava.repository.StarShipRepository;
-import ru.itmo.soa.soaspacemarinejava.rest.SpaceMarineEndpoint;
-import ru.itmo.soa.soaspacemarinejava.rest.data.SpaceMarineRequest;
 
 @Service
 public class SpaceMarineService {
@@ -69,19 +69,19 @@ public class SpaceMarineService {
         Long starShipId = updateReq.getStarShipId();
         if (starShipId != null) {
             starShipToUpdate = starShipRepository.findById(starShipId).orElseThrow(
-                    () -> new ResourceNotFoundException("Воздушный корабль с id = " + starShipId + " не найден!"));
+                    () -> new ServiceFaultException("Error", new ServiceFault("404", "Воздушный корабль с id = " + starShipId + " не найден!")));
 
             if (starShipToUpdate.getSpaceMarine() != null) {
                 if (starShipToUpdate.getSpaceMarine().getId().equals(updateReq.getId())) {
                     throw new ResourceAlreadyExistException("Воздушный десантник с id = " + updateReq.getId() +
                             " и так занял корабль с id = " + starShipId + "!");
                 }
-                throw new ResourceAlreadyExistException("Воздушный корабль с id = " + starShipId + " уже занят!");
+                throw new ServiceFaultException("Error", new ServiceFault("400", "Воздушный корабль с id = " + starShipId + " уже занят!"));
             }
         }
 
         SpaceMarine spaceMarine = spaceMarineRepository.findById(updateReq.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("Воздушный десантник с id = " + updateReq.getId() + " не найден!"));
+                () -> new ServiceFaultException("Error", new ServiceFault("404","Воздушный десантник с id = " + updateReq.getId() + " не найден!")));
 
         spaceMarine.setName(updateReq.getName());
         spaceMarine.setCoordinates(
@@ -120,13 +120,13 @@ public class SpaceMarineService {
 
     public SpaceMarine findById(Long id) {
         SpaceMarine spaceMarine = spaceMarineRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Воздушный десантник с id = " + id + " не найден!"));
+                () -> new ServiceFaultException("Error", new ServiceFault("404","Воздушный десантник с id = " + id + " не найден!")));
         return spaceMarine;
     }
 
     public GetSpaceMarineByIdResponse findById(GetSpaceMarineByIdRequest id) {
         SpaceMarine spaceMarine = spaceMarineRepository.findById(id.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("Воздушный десантник с id = " + id.getId() + " не найден!"));
+                () -> new ServiceFaultException("Error", new ServiceFault("404","Воздушный десантник с id = " + id.getId() + " не найден!")));
         GetSpaceMarineByIdResponse response = new GetSpaceMarineByIdResponse();
         var sp = mapper.map(spaceMarine, io.spring.guides.gs_producing_web_service.SpaceMarine.class);
         response.setSpaceMarine(sp);
@@ -135,7 +135,7 @@ public class SpaceMarineService {
 
     public DeleteSpaceMarineByIdResponse deleteById(DeleteSpaceMarineByIdRequest id) {
         spaceMarineRepository.findById(id.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("Воздушный десантник с id = " + id.getId() + " не найден!"));
+                () -> new ServiceFaultException("Error", new ServiceFault("404","Воздушный десантник с id = " + id.getId() + " не найден!")));
 
         spaceMarineRepository.deleteById(id.getId());
         DeleteSpaceMarineByIdResponse response = new DeleteSpaceMarineByIdResponse();
@@ -182,18 +182,18 @@ public class SpaceMarineService {
 
     public IncludeStarshipResponse starShipInclude(IncludeStarshipRequest request) {
         StarShip starShipToUpdate = starShipRepository.findById(request.getStarShipId()).orElseThrow(
-                () -> new ResourceNotFoundException("Воздушный корабль с id = " + request.getStarShipId() + " не найден!"));
+                () -> new ServiceFaultException("Error", new ServiceFault("404","Воздушный корабль с id = " + request.getStarShipId() + " не найден!")));
 
         if (starShipToUpdate.getSpaceMarine() != null) {
             if (starShipToUpdate.getSpaceMarine().getId().equals(request.getId())) {
-                throw new ResourceAlreadyExistException("Воздушный десантник с id = " + request.getId() +
-                        " и так занял корабль с id = " + request.getStarShipId() + "!");
+                throw new ServiceFaultException("Error", new ServiceFault("400","Воздушный десантник с id = " + request.getId() +
+                        " и так занял корабль с id = " + request.getStarShipId() + "!"));
             }
-            throw new ResourceAlreadyExistException("Воздушный корабль с id = " + request.getStarShipId() + " уже занят!");
+            throw new ServiceFaultException("Error", new ServiceFault("400","Воздушный корабль с id = " + request.getStarShipId() + " уже занят!"));
         }
 
         SpaceMarine spaceMarine = spaceMarineRepository.findById(request.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("Воздушный десантник с id = " + request.getId() + " не найден!"));
+                () -> new ServiceFaultException("Error", new ServiceFault("404","Воздушный десантник с id = " + request.getId() + " не найден!")));
 
         starShipToUpdate.setSpaceMarine(spaceMarine);
         starShipRepository.save(starShipToUpdate);

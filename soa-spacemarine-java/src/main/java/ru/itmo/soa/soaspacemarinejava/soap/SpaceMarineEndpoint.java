@@ -1,11 +1,10 @@
-package ru.itmo.soa.soaspacemarinejava.rest;
+package ru.itmo.soa.soaspacemarinejava.soap;
 
 import io.spring.guides.gs_producing_web_service.*;
 
 import jakarta.xml.bind.JAXBElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
